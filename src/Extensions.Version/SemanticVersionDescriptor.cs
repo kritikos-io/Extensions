@@ -8,7 +8,10 @@ using System.Text.RegularExpressions;
 
 public partial class SemanticVersionDescriptor
 {
-  private const RegexOptions ParserOption = RegexOptions.CultureInvariant;
+  private const RegexOptions ParserOption = RegexOptions.Compiled
+                                            | RegexOptions.CultureInvariant
+                                            | RegexOptions.ExplicitCapture
+                                            | RegexOptions.Singleline;
 
   // RegexOptions.Singleline
   // | RegexOptions.ExplicitCapture;
