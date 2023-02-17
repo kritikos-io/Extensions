@@ -1,10 +1,22 @@
-# Templates - Dotnet
+# Kritikos.Extensions
 
-A simple template leveraging [.Config][1] dotfiles submodule  for rapid project deployment. Simply rename Solution.{code-workspace,sln,sln.DotSettings} to your project name and get started! Afterwards, replace this readme with the actual documentation of your project.
+An opinionated set of extensions to be used as a starting point for new projects.
 
-Additionally, change the Project & Repository urls on [src/Directory.Build.props](src/Directory.Build.props).
+Notable projects:
 
-Additionally, until GitHub properly supports submodule definitions from template repositories, after cloning you should run
-```git submodule add https://github.com/kritikos-io/.config``` from the repository root. You can replace the submodule with a compatible fork (to preserve your own default namespace etc) **provided it keeps file naming intact** since most files are appearing as symlinks.
+## Kritikos.Extensions.Version
 
-[1]: https://github.com/kritikos-io/.config
+A library that provides a simple way to get the semantic version of the current assembly.
+```csharp
+// Simple usage
+SemanticVersion.FromAsembly(typeof(Startup).Assembly);
+
+// DI Injection
+var services = new ServiceCollection();
+services.AddSemanticVersionExposing(typeof(Startup).Assembly);
+```
+
+Versioning is expected to be exposed in the InformationalVersion attribute, and can be of any of the following formats:
+
+* Simple version: `1.0.0`
+*
