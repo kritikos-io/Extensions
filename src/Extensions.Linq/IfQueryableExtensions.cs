@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-public static class QueryableIfExtensions
+public static class IfQueryableExtensions
 {
   /// <summary>
   /// Filters a sequence of values based on a predicate, only if <paramref name="condition"/> is true.

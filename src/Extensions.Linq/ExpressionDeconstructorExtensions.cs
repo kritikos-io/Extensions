@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 
 [ExcludeFromCodeCoverage]
-public static class ExpressionDeconstructor
+public static class ExpressionDeconstructorExtensions
 {
   public static void Deconstruct(
     this BinaryExpression expr,

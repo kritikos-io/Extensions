@@ -2,10 +2,12 @@
 
 namespace Microsoft.Extensions.DependencyInjection;
 
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 using Kritikos.Extensions.Version;
 
+[ExcludeFromCodeCoverage]
 public static class DependencyInjectionExtensions
 {
   public static IServiceCollection AddSemanticVersionDescriptor(this IServiceCollection services, Assembly assembly)

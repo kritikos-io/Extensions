@@ -1,6 +1,6 @@
 ﻿namespace Kritikos.Extensions.Linq;
 
-public static class EnumerableIfExtensions
+public static class IfEnumerableExtensions
 {
   /// <summary>
   /// Filters a sequence of values based on a predicate, only if <paramref name="condition"/> is true.

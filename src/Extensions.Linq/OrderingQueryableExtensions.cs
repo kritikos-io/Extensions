@@ -7,7 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 
-public static class QueryableOrderingExtensions
+public static class OrderingQueryableExtensions
 {
   /// <summary>
   /// Sorts the elements of a sequence by <paramref name="property"/> in ascending order.

@@ -1,12 +1,7 @@
-# Kritikos.Extensions
-
-An opinionated set of extensions to be used as a starting point for new projects.
-
-Notable projects:
-
-## Kritikos.Extensions.Version
+# Kritikos.Extensions.Version
 
 A library that provides a simple way to get the semantic version of the current assembly.
+
 ```csharp
 // Simple usage
 SemanticVersion.FromAsembly(typeof(Startup).Assembly);
