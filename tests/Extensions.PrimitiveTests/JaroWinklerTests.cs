@@ -66,15 +66,6 @@ public class JaroWinklerTests
   }
 
   [Fact]
-  public void One_string_is_subset_of_the_other()
-  {
-    const string a = "Alex";
-    const string b = "Alexandros";
-
-    var c = a.JaroWinklerDistance(b);
-  }
-
-  [Fact]
   public void Ensure_that_JaroWinkler_distance_is_symmetric()
   {
     const string a = "Alex";
