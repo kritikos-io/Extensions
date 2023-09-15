@@ -1,4 +1,3 @@
-#pragma warning disable CA5394
 namespace Kritikos.Extensions.LinqTests;
 
 using System.Linq;
@@ -13,17 +12,6 @@ public class QueryableIfTests
   private const int GreaterThan = 30;
   private const int Take = 2;
   private const int Skip = 5;
-
-  internal static IQueryable<int> GetRandomQueryable(int size, int min = 0, int max = 100)
-  {
-    var arr = new int[size];
-    for (var i = 0; i < size; i++)
-    {
-      arr[i] = Random.Shared.Next(min, max);
-    }
-
-    return arr.AsQueryable();
-  }
 
   [Fact]
   public void WhereIfTests()
@@ -59,5 +47,16 @@ public class QueryableIfTests
 
     var invalidCondition = arr.SkipIf(false, Skip);
     Assert.Equal(arr.Count(), invalidCondition.Count());
+  }
+
+  internal static IQueryable<int> GetRandomQueryable(int size, int min = 0, int max = 100)
+  {
+    var arr = new int[size];
+    for (var i = 0; i < size; i++)
+    {
+      arr[i] = Random.Shared.Next(min, max);
+    }
+
+    return arr.AsQueryable();
   }
 }

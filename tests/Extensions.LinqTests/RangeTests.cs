@@ -1,4 +1,3 @@
-#pragma warning disable CA1707
 namespace Kritikos.Extensions.LinqTests;
 
 using Kritikos.Extensions.Linq;

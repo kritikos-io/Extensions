@@ -1,4 +1,4 @@
-﻿namespace Kritikos.Extensions.PrimitiveTests;
+namespace Kritikos.Extensions.PrimitiveTests;
 
 using Kritikos.Extensions.Primitive;
 
@@ -39,13 +39,13 @@ public class DamerauLevenshteinTests
   [Fact]
   public void Insertions_from_empty()
   {
-    var source = "";
-    var target = "hello";
+    const string target = "hello";
+    var source = string.Empty;
     Assert.Equal(5, source.DamerauLevenshteinDistance(target));
   }
 
   [Fact]
-  void Single_transposition()
+  public void Single_transposition()
   {
     var source = "kitten";
     var target = "kittne";

@@ -1,4 +1,4 @@
-﻿namespace Kritikos.Extensions.PrimitiveTests;
+namespace Kritikos.Extensions.PrimitiveTests;
 
 using Kritikos.Extensions.Primitive;
 
@@ -94,9 +94,6 @@ public class JaroWinklerTests
 
     Assert.Equal(1, a.JaroWinklerDistance(b));
   }
-
-  [Fact]
-  public void Bar() { }
 
   [Fact]
   public void Winklers_modification_decreases_distance()
