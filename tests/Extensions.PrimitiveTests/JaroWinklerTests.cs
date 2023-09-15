@@ -12,8 +12,8 @@ public class JaroWinklerTests
     const string a = null!;
     const string b = null!;
 
-    Assert.Throws<ArgumentNullException>(() => a.JaroWinklerDistance(b));
-    Assert.Throws<ArgumentNullException>(() => b.JaroWinklerDistance(a));
+    Assert.Throws<ArgumentNullException>(() => a!.JaroWinklerDistance(b!));
+    Assert.Throws<ArgumentNullException>(() => b!.JaroWinklerDistance(a!));
   }
 
   [Fact]

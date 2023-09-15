@@ -60,6 +60,7 @@ public static class StringExtensions
   /// </remarks>
   /// <returns>A number in the range 0 (strings are equal) to 1 (strings have no similarity).</returns>
   /// <exception cref="ArgumentNullException">When <paramref name="source"/> or <paramref name="target"/> are null.</exception>
+  // ReSharper disable once CognitiveComplexity
   public static double JaroWinklerDistance(
     this string source,
     string target,

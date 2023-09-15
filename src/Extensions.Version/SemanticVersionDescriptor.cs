@@ -46,7 +46,7 @@ public partial record SemanticVersionDescriptor
     => FromInformationalVersionAttribute(assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!);
 
   public static SemanticVersionDescriptor FromInformationalVersionAttribute(AssemblyInformationalVersionAttribute attr)
-    => FromString(attr?.InformationalVersion!);
+    => FromString(attr.InformationalVersion);
 
   /// <inheritdoc />
   public override string ToString()

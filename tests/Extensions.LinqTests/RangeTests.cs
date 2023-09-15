@@ -28,7 +28,7 @@ public class RangeTests
   public void Range_from_end_throws_not_supported() =>
     Assert.Throws<NotSupportedException>(() =>
     {
-      foreach (var number in 10..)
+      foreach (var _ in 10..)
       {
       }
     });

@@ -12,14 +12,8 @@ public class OrderingByBenchmarks
     = AnimalProvider.Animals.Generate(1000).AsQueryable();
 
   [Benchmark]
-  public void OrderByPropertyName()
-  {
-    var order = animals.OrderByProperty(nameof(Animal.Name));
-  }
+  public void OrderByPropertyName() => _ = animals.OrderByProperty(nameof(Animal.Name));
 
   [Benchmark]
-  public void OrderBy()
-  {
-    var order = animals.OrderBy(x => x.Name);
-  }
+  public void OrderBy() => _ = animals.OrderBy(x => x.Name);
 }
