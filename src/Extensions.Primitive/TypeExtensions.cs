@@ -15,7 +15,7 @@ public static class TypeExtensions
     }
 
     var currentBaseType = type.BaseType;
-    while (currentBaseType is not null || currentBaseType != typeof(object))
+    while (currentBaseType != typeof(object) && currentBaseType is not null)
     {
       yield return currentBaseType;
       currentBaseType = currentBaseType.BaseType;
