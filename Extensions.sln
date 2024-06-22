@@ -41,9 +41,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{9590
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{18FB97B3-3321-4F9B-B3A1-12BC0DE1D000}"
-	ProjectSection(SolutionItems) = preProject
-		Directory.Packages.props = Directory.Packages.props
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extensions.Version", "src\Extensions.Version\Extensions.Version.csproj", "{47DB5AB3-458A-4CA9-BB6F-7178EC717FD7}"
 EndProject

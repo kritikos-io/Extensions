@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 
-public partial record SemanticVersionDescriptor
+public sealed partial class SemanticVersionDescriptor
 {
   private const RegexOptions ParserOption = RegexOptions.Compiled
                                             | RegexOptions.CultureInvariant
@@ -15,10 +15,12 @@ public partial record SemanticVersionDescriptor
 
   [StringSyntax(StringSyntaxAttribute.Regex)]
   private const string FullVersionIdentifier =
-    @"^(?<Major>0|[1-9]\d*)\.(?<Minor>0|[1-9]\d*)\.(?<Patch>0|[1-9]\d*)(-(?<PreRelease>(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+(Branch\.(?<Branch>.+)\.Sha\.)?(?<Sha>.+))?$";
+      @"^(?<Major>0|[1-9]\d*)\.(?<Minor>0|[1-9]\d*)\.(?<Patch>0|[1-9]\d*)(-(?<PreRelease>(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+(Branch\.(?<Branch>.+)\.Sha\.)?(?<Sha>.+))?$";
 
   [StringSyntax(StringSyntaxAttribute.Regex)]
   private const string PreReleaseIdentifier = @"^((?<WorkItem>\d+)\.?\-?)?(.+)((\.)(?<Counter>\d+))$";
+
+  private string? reconstructed = string.Empty;
 
   private SemanticVersionDescriptor()
   {
@@ -30,9 +32,11 @@ public partial record SemanticVersionDescriptor
 
   public int Patch { get; private init; }
 
-  internal string Version { get; private init; } = string.Empty;
+  public string Version { get; private init; } = string.Empty;
 
   public string PreReleaseTag { get; private init; } = string.Empty;
+
+  public string SemanticVersion { get; private init; } = string.Empty;
 
   public string WorkItem { get; private init; } = string.Empty;
 
@@ -42,36 +46,59 @@ public partial record SemanticVersionDescriptor
 
   public string Sha1 { get; private init; } = string.Empty;
 
+  public static bool operator ==(SemanticVersionDescriptor a, SemanticVersionDescriptor b)
+  {
+    ArgumentNullException.ThrowIfNull(a);
+    ArgumentNullException.ThrowIfNull(b);
+    return a.Major == b.Major
+           && a.Minor == b.Minor
+           && a.Patch == b.Patch
+           && a.PreReleaseTag == b.PreReleaseTag
+           && a.CommitCounter == b.CommitCounter;
+  }
+
+  public static bool operator !=(SemanticVersionDescriptor a, SemanticVersionDescriptor b)
+    => !(a == b);
+
+  public static bool operator >(SemanticVersionDescriptor a, SemanticVersionDescriptor b)
+  {
+    ArgumentNullException.ThrowIfNull(a);
+    ArgumentNullException.ThrowIfNull(b);
+
+    if (a.Major != b.Major)
+    {
+      return a.Major > b.Major;
+    }
+
+    if (a.Minor != b.Minor)
+    {
+      return a.Minor > b.Minor;
+    }
+
+    if (a.Patch != b.Patch)
+    {
+      return a.Patch > b.Patch;
+    }
+
+    var preReleaseComparison = string.CompareOrdinal(a.PreReleaseTag, b.PreReleaseTag);
+    if (preReleaseComparison != 0)
+    {
+      return preReleaseComparison < 0;
+    }
+
+    return a.CommitCounter > b.CommitCounter;
+  }
+
+  public static bool operator <(SemanticVersionDescriptor a, SemanticVersionDescriptor b)
+    => !(a > b);
+
   public static SemanticVersionDescriptor FromAssembly(Assembly assembly)
     => FromInformationalVersionAttribute(assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!);
 
   public static SemanticVersionDescriptor FromInformationalVersionAttribute(AssemblyInformationalVersionAttribute attr)
     => FromString(attr.InformationalVersion);
 
-  /// <inheritdoc />
-  public override string ToString()
-  {
-    var stringBuilder = new StringBuilder(3);
-    stringBuilder.Append(Version);
-    if (!string.IsNullOrWhiteSpace(PreReleaseTag))
-    {
-      stringBuilder.Append(CultureInfo.InvariantCulture, $"-{PreReleaseTag}");
-    }
-
-    if (!string.IsNullOrWhiteSpace(Branch))
-    {
-      stringBuilder.Append(CultureInfo.InvariantCulture, $"+Branch.{Branch}.Sha.{Sha1}");
-    }
-
-    if (!string.IsNullOrWhiteSpace(Sha1) && string.IsNullOrWhiteSpace(Branch))
-    {
-      stringBuilder.Append(CultureInfo.InvariantCulture, $"+{Sha1}");
-    }
-
-    return stringBuilder.ToString();
-  }
-
-  internal static SemanticVersionDescriptor FromString(string version)
+  public static SemanticVersionDescriptor FromString(string version)
   {
     if (string.IsNullOrWhiteSpace(version))
     {
@@ -89,21 +116,57 @@ public partial record SemanticVersionDescriptor
     var patch = int.Parse(match.Groups["Patch"].Value, CultureInfo.InvariantCulture);
     var prerelease = PreReleaseParser().Match(match.Groups["PreRelease"].Value);
 
+    var numericVersion = $"{major}.{minor}.{patch}";
+    var semanticVersion = string.IsNullOrWhiteSpace(prerelease.Value)
+        ? numericVersion
+        : $"{numericVersion}-{prerelease.Value}";
+
     var result = new SemanticVersionDescriptor()
     {
       Major = major,
       Minor = minor,
       Patch = patch,
-      Version = $"{major}.{minor}.{patch}",
+      Version = numericVersion,
       PreReleaseTag = match.Groups["PreRelease"].Value,
+      SemanticVersion = semanticVersion,
       Branch = match.Groups["Branch"].Value,
       Sha1 = match.Groups["Sha"].Value,
       WorkItem = prerelease.Groups["WorkItem"].Value,
       CommitCounter = prerelease.Success
-        ? int.Parse(prerelease.Groups["Counter"].Value, CultureInfo.InvariantCulture)
-        : 0,
+          ? int.Parse(prerelease.Groups["Counter"].Value, CultureInfo.InvariantCulture)
+          : 0,
     };
+
+    result.ReconstructVersion();
+
     return result;
+  }
+
+  /// <inheritdoc />
+  public override string ToString() => reconstructed ??= ReconstructVersion();
+
+  private string ReconstructVersion()
+  {
+    var stringBuilder = new StringBuilder(3);
+
+    stringBuilder.Append(Version);
+    if (!string.IsNullOrWhiteSpace(PreReleaseTag))
+    {
+      stringBuilder.Append(CultureInfo.InvariantCulture, $"-{PreReleaseTag}");
+    }
+
+    if (!string.IsNullOrWhiteSpace(Branch))
+    {
+      stringBuilder.Append(CultureInfo.InvariantCulture, $"+Branch.{Branch}.Sha.{Sha1}");
+    }
+
+    if (!string.IsNullOrWhiteSpace(Sha1) && string.IsNullOrWhiteSpace(Branch))
+    {
+      stringBuilder.Append(CultureInfo.InvariantCulture, $"+{Sha1}");
+    }
+
+    reconstructed = stringBuilder.ToString();
+    return reconstructed;
   }
 
   [GeneratedRegex(FullVersionIdentifier, ParserOption)]
